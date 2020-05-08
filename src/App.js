@@ -25,6 +25,15 @@ function App() {
     },
   ]);
 
+  const createNewTask= taskName => {
+    if(!taskItems.find(t => t.name === taskName)){
+      setTaskItems([...taskItems, {
+        name: taskName,
+        done: false
+      }])
+    }
+  }
+
   const toggleTask = (task) => {
     setTaskItems(
       taskItems.map((t) => (t.name === task.name ? { ...t, done: !t.done } : t))
@@ -36,7 +45,7 @@ function App() {
   return (
     <div>
       <TaskBanner userName={userName} taskItems={taskItems} />
-      <TaskCreator />
+      <TaskCreator callback={createNewTask}/>
       <table className="table table-striped table-bordered">
         <thead>
           <tr>

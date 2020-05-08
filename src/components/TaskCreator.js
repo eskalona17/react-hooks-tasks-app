@@ -5,7 +5,7 @@ export const TaskCreator = (props) => {
   const updateNewTaskValue = e => setNewTaskName(e.target.value)
 
   const crateNewTask = () => {
-      console.log(newTaskName);
+      props.callback(newTaskName)
       setNewTaskName('');
   }
   return (
