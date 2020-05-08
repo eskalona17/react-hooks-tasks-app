@@ -1,9 +1,11 @@
 import React, { useState } from "react";
 import "./App.css";
 import { TaskRow } from "./components/TaskRow";
+import { TaskBanner } from "./components/TaskBanner";
+import { TaskCreator } from "./components/TaskCreator";
 
 function App() {
-  const [userName, setUserName] = useState("fer");
+  const [userName, setUserName] = useState("Fer");
   const [taskItems, setTaskItems] = useState([
     {
       name: "Task one",
@@ -33,8 +35,9 @@ function App() {
     taskItems.map((task) => <TaskRow task={task} key={task.name} toggleTask={toggleTask}/>);
   return (
     <div>
-      <h1>Hello world</h1>
-      <table>
+      <TaskBanner userName={userName} taskItems={taskItems} />
+      <TaskCreator />
+      <table className="table table-striped table-bordered">
         <thead>
           <tr>
             <th>Description</th>
