@@ -1,8 +1,9 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import "./App.css";
 import { TaskRow } from "./components/TaskRow";
 import { TaskBanner } from "./components/TaskBanner";
 import { TaskCreator } from "./components/TaskCreator";
+import { VisibilityControl } from "./components/VisibilityControl";
 
 function App() {
   const [userName, setUserName] = useState("Fer");
@@ -22,17 +23,55 @@ function App() {
     {
       name: "Task four",
       done: false,
-    },
+    }
   ]);
 
-  const createNewTask= taskName => {
-    if(!taskItems.find(t => t.name === taskName)){
-      setTaskItems([...taskItems, {
-        name: taskName,
-        done: false
-      }])
+  const [showCompleted, setShowCompleted] = useState(true);
+
+  //como el componentdidmount
+  useEffect(() =>{
+    let data = localStorage.getItem('tasks');
+    if(data!= null){
+      setTaskItems(JSON.parse(data));
+    }else {
+      setUserName('Fer example')
+      setTaskItems([
+        {
+          name: "Task one example",
+          done: false,
+        },
+        {
+          name: "Task two example",
+          done: false,
+        },
+        {
+          name: "Task three example",
+          done: true,
+        },
+        {
+          name: "Task four example",
+          done: false,
+        }
+      ])
+      setShowCompleted(true)
     }
-  }
+  }, []);
+
+  useEffect(() => {
+    localStorage.setItem('tasks', JSON.stringify(taskItems))
+  }, [taskItems])
+
+  const createNewTask = (taskName) => {
+    if (!taskItems.find((t) => t.name === taskName)) {
+      setTaskItems([
+        ...taskItems,
+        {
+          name: taskName,
+          done: false,
+        },
+      ]);
+    }
+  };
 
   const toggleTask = (task) => {
     setTaskItems(
@@ -40,12 +79,16 @@ function App() {
     );
   };
 
-  const taskTableRows = () =>
-    taskItems.map((task) => <TaskRow task={task} key={task.name} toggleTask={toggleTask}/>);
+  const taskTableRows = (doneValue) =>
+    taskItems
+    .filter(task => task.done === doneValue)
+    .map((task) => (
+      <TaskRow task={task} key={task.name} toggleTask={toggleTask} />
+    ));
   return (
     <div>
       <TaskBanner userName={userName} taskItems={taskItems} />
-      <TaskCreator callback={createNewTask}/>
+      <TaskCreator callback={createNewTask} />
       <table className="table table-striped table-bordered">
         <thead>
           <tr>
@@ -53,8 +96,31 @@ function App() {
             <th>Done</th>
           </tr>
         </thead>
-        <tbody>{taskTableRows()}</tbody>
+        <tbody>{taskTableRows(false)}</tbody>
       </table>
+      <div className="bg-secondary-text-white text-center p-2">
+        <VisibilityControl
+          description="Completed task"
+          isChecked={showCompleted}
+          callback={(checked) => setShowCompleted(checked)}
+        />
+      </div>
+
+      {
+        showCompleted && (
+          <table className="table table-striped-table-bordered">
+            <thead>
+              <tr>
+                <th>Description</th>
+                <th>Done</th>
+              </tr>
+            </thead>
+            <tbody>
+              {taskTableRows(true)}
+            </tbody>
+          </table>
+        )
+      }
     </div>
   );
 }
